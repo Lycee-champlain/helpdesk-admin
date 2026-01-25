@@ -488,22 +488,61 @@
             var rows = data.table.rows;
             var result = [];
             
+            console.log('Colonnes du Sheet:', cols.map(function(c) { return c.label; }));
+            
             for (var i = 0; i < rows.length; i++) {
                 var row = rows[i];
+                if (!row.c) continue;
+                
                 var obj = {};
                 
                 for (var j = 0; j < cols.length; j++) {
                     var colName = cols[j].label || 'Col' + j;
                     var cell = row.c[j];
-                    obj[colName] = cell ? (cell.f || cell.v || '') : '';
+                    
+                    if (!cell) {
+                        obj[colName] = '';
+                        continue;
+                    }
+                    
+                    // Gestion spéciale pour les dates (type 'datetime' ou 'date')
+                    if (cols[j].type === 'datetime' || cols[j].type === 'date') {
+                        if (cell.v) {
+                            // Google Sheets retourne les dates comme "Date(2025,0,25,10,30,0)"
+                            var dateStr = cell.f || cell.v;
+                            if (typeof dateStr === 'string' && dateStr.indexOf('Date(') === 0) {
+                                // Extraire et parser
+                                var match = dateStr.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
+                                if (match) {
+                                    var year = parseInt(match[1]);
+                                    var month = parseInt(match[2]);
+                                    var day = parseInt(match[3]);
+                                    var hour = match[4] ? parseInt(match[4]) : 0;
+                                    var min = match[5] ? parseInt(match[5]) : 0;
+                                    var sec = match[6] ? parseInt(match[6]) : 0;
+                                    obj[colName] = new Date(year, month, day, hour, min, sec);
+                                } else {
+                                    obj[colName] = new Date(dateStr);
+                                }
+                            } else {
+                                obj[colName] = new Date(dateStr);
+                            }
+                        } else {
+                            obj[colName] = '';
+                        }
+                    } else {
+                        obj[colName] = cell.f || cell.v || '';
+                    }
                 }
                 
-                // Filtrer les lignes vides
-                if (obj[cols[0].label] && obj[cols[0].label].toString().trim() !== '') {
+                // Filtrer les lignes vides (vérifier la première colonne)
+                var firstCol = cols[0].label;
+                if (obj[firstCol] && obj[firstCol].toString().trim() !== '') {
                     result.push(obj);
                 }
             }
             
+            console.log('Exemple de ligne parsée:', result[0]);
             return result;
         }
 
@@ -545,8 +584,11 @@
             
             data.forEach(function(row) {
                 if (row.Horodateur) {
-                    var m = new Date(row.Horodateur).getMonth();
-                    counts[m]++;
+                    var date = row.Horodateur instanceof Date ? row.Horodateur : new Date(row.Horodateur);
+                    if (!isNaN(date.getTime())) {
+                        var m = date.getMonth();
+                        counts[m]++;
+                    }
                 }
             });
 
@@ -652,16 +694,34 @@
             
             data.slice(-20).reverse().forEach(function(row) {
                 var tr = document.createElement('tr');
-                var date = row.Horodateur ? new Date(row.Horodateur).toLocaleDateString('fr-FR') : '-';
+                
+                // Gérer les dates
+                var date = '-';
+                if (row.Horodateur) {
+                    if (row.Horodateur instanceof Date) {
+                        date = row.Horodateur.toLocaleDateString('fr-FR');
+                    } else {
+                        var d = new Date(row.Horodateur);
+                        if (!isNaN(d.getTime())) {
+                            date = d.toLocaleDateString('fr-FR');
+                        }
+                    }
+                }
+                
                 var statut = row.Statut || 'Ouvert';
                 var badgeClass = statut === 'Ouvert' ? 'badge-ouvert' : 
                                  statut === 'En cours' ? 'badge-encours' : 'badge-ferme';
                 
+                // Chercher la colonne salle (avec ou sans exemple)
+                var salle = row['Salle (Ex: F114)'] || row['Salle'] || row['salle'] || '-';
+                var type = row['Type de demande'] || row['Type'] || '-';
+                var auteur = row['Auteur de la demande (Nom et Prénom)'] || row['Auteur'] || '-';
+                
                 tr.innerHTML = 
                     '<td>' + date + '</td>' +
-                    '<td>' + (row['Salle (Ex: F114)'] || '-') + '</td>' +
-                    '<td>' + (row['Type de demande'] || '-') + '</td>' +
-                    '<td>' + (row['Auteur de la demande (Nom et Prénom)'] || '-') + '</td>' +
+                    '<td>' + salle + '</td>' +
+                    '<td>' + type + '</td>' +
+                    '<td>' + auteur + '</td>' +
                     '<td><span class="badge ' + badgeClass + '">' + statut + '</span></td>';
                 tbody.appendChild(tr);
             });
