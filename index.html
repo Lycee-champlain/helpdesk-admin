@@ -98,16 +98,17 @@
             padding: 5px;
             font-size: 0.9rem;
         }
-        .bar-label { 
+        .month-label { 
             text-align: center; 
             font-size: 0.85rem; 
             color: #666;
             margin-top: 5px;
+            white-space: nowrap;
         }
         
         .horizontal-bars { display: flex; flex-direction: column; gap: 10px; }
         .bar-item { display: flex; align-items: center; gap: 10px; }
-        .bar-label { 
+        .room-label { 
             min-width: 80px;
             width: 80px;
             text-align: right; 
@@ -419,7 +420,7 @@
                         '<div class="bar" style="height: ' + height + '%">' +
                         '<div class="bar-value">' + counts[i] + '</div>' +
                         '</div>' +
-                        '<div class="bar-label">' + months[i] + '</div>' +
+                        '<div class="month-label">' + months[i] + '</div>' +
                         '</div>';
             }
             
@@ -459,7 +460,7 @@
             top10.forEach(function(room) {
                 var width = (rooms[room] / max * 100);
                 html += '<div class="bar-item">' +
-                        '<div class="bar-label">' + room + '</div>' +
+                        '<div class="room-label">' + room + '</div>' +
                         '<div class="bar-fill" style="width: ' + width + '%">' + rooms[room] + '</div>' +
                         '</div>';
             });
