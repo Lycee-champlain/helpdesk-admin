@@ -133,196 +133,295 @@
         #error { text-align: center; padding: 50px; background: rgba(255,255,255,0.95); color: #c33; border-radius: 12px; margin: 50px auto; max-width: 600px; }
         
         @media print {
-            body { 
-                background: white !important; 
-                color: black !important;
-                padding: 0;
-                margin: 0;
+            /* Reset et base */
+            * { 
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
             }
             
-            .container { max-width: 100%; }
+            body { 
+                background: white !important; 
+                color: #333 !important;
+                padding: 0;
+                margin: 0;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                line-height: 1.6;
+            }
             
-            .controls, .btn { display: none !important; }
+            .container { 
+                max-width: 100%; 
+                padding: 0;
+            }
             
-            /* En-tête professionnel */
+            /* Masquer les contrôles */
+            .controls, .btn, header { 
+                display: none !important; 
+            }
+            
+            /* Page de couverture */
             .print-header { 
                 display: block !important; 
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white !important;
-                text-align: center; 
-                padding: 40px 20px;
-                margin-bottom: 40px;
-                page-break-after: avoid;
+                padding: 80px 40px;
+                text-align: center;
+                page-break-after: always;
+                height: 100vh;
+                display: flex !important;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
             
             .print-header h1 {
-                font-size: 2.5rem;
-                margin-bottom: 15px;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                font-size: 3.5rem;
+                margin: 30px 0;
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+                font-weight: 700;
+                letter-spacing: 2px;
             }
             
             .print-header .subtitle {
-                font-size: 1.2rem;
-                margin: 10px 0;
+                font-size: 1.4rem;
+                margin: 15px 0;
                 opacity: 0.95;
+                font-weight: 400;
             }
             
             .print-date { 
-                font-size: 1rem; 
-                margin-top: 15px;
+                font-size: 1.2rem; 
+                margin: 25px 0;
                 font-weight: 600;
+                padding: 20px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 10px;
             }
             
-            /* En-tête de page régulier (masqué à l'impression) */
-            header { display: none !important; }
+            .print-period {
+                font-size: 1.1rem;
+                margin-top: 20px;
+                padding: 15px 30px;
+                background: rgba(255,255,255,0.15);
+                border-radius: 8px;
+                font-weight: 500;
+            }
             
-            /* Statistiques */
+            /* Section d'analyse */
+            #dashboard {
+                padding: 40px;
+            }
+            
+            /* Titre de section */
+            .section-title {
+                display: block !important;
+                font-size: 1.8rem;
+                color: #667eea;
+                border-bottom: 3px solid #667eea;
+                padding-bottom: 10px;
+                margin: 40px 0 25px 0;
+                font-weight: 600;
+                page-break-after: avoid;
+            }
+            
+            /* Statistiques - Vue en grille élégante */
             .stats-grid {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-                margin: 30px 0;
+                gap: 20px;
+                margin: 30px 0 50px 0;
                 page-break-inside: avoid;
             }
             
             .stat-card { 
-                box-shadow: none !important; 
-                border: 2px solid #667eea !important;
-                page-break-inside: avoid;
                 background: white !important;
-            }
-            
-            .stat-value { 
-                color: #667eea !important;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+                border: 3px solid #667eea !important;
+                border-radius: 12px;
+                padding: 25px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+                page-break-inside: avoid;
             }
             
             .stat-label {
-                color: #333 !important;
+                font-size: 0.95rem;
+                color: #666 !important;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+            
+            .stat-value { 
+                font-size: 3.5rem !important;
+                color: #667eea !important;
+                font-weight: 700;
+                line-height: 1;
             }
             
             /* Graphiques */
             .chart-grid {
                 display: block;
-                page-break-inside: avoid;
             }
             
             .chart-container { 
-                box-shadow: none !important; 
-                border: 2px solid #ddd !important;
-                page-break-inside: avoid;
-                margin-bottom: 30px;
                 background: white !important;
+                border: 2px solid #e0e0e0 !important;
+                border-radius: 12px;
+                padding: 30px;
+                margin: 30px 0;
+                page-break-inside: avoid;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
             }
             
             .chart-title {
+                font-size: 1.5rem;
                 color: #667eea !important;
                 border-bottom: 2px solid #667eea;
-                padding-bottom: 10px;
-                margin-bottom: 20px;
+                padding-bottom: 12px;
+                margin-bottom: 25px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
             
             /* Barres horizontales */
-            .bar-fill {
-                background: linear-gradient(to right, #667eea, #764ba2) !important;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-                color: white !important;
+            .horizontal-bars {
+                padding: 10px 0;
+            }
+            
+            .bar-item {
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 15px;
             }
             
             .month-label-horizontal, .room-label {
-                color: #333 !important;
-                font-weight: 600 !important;
+                min-width: 120px;
+                width: 120px;
+                color: #444 !important;
+                font-weight: 600;
+                font-size: 1rem;
+                text-align: right;
+            }
+            
+            .bar-fill {
+                background: linear-gradient(to right, #667eea, #764ba2) !important;
+                color: white !important;
+                padding: 10px 16px;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 0.95rem;
+                box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
             }
             
             /* Tableau */
             .table-container { 
-                box-shadow: none !important; 
-                border: 2px solid #ddd !important;
-                page-break-inside: avoid;
-                margin-top: 30px;
                 background: white !important;
+                border: 2px solid #e0e0e0 !important;
+                border-radius: 12px;
+                padding: 30px;
+                margin: 30px 0;
+                page-break-inside: avoid;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
             }
             
             table { 
                 width: 100%; 
                 border-collapse: collapse;
+                font-size: 0.9rem;
             }
             
             th { 
                 background: #667eea !important; 
                 color: white !important;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-                border: 1px solid #667eea !important;
+                padding: 14px 12px;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.85rem;
+                border: none !important;
             }
             
             td { 
-                border: 1px solid #ddd !important;
-                color: #333 !important;
+                padding: 12px;
+                border-bottom: 1px solid #e8e8e8 !important;
+                color: #444 !important;
             }
             
             tr:nth-child(even) {
-                background: #f9f9f9 !important;
+                background: #f8f9fa !important;
             }
             
+            tr:last-child td {
+                border-bottom: none !important;
+            }
+            
+            /* Badges */
             .badge { 
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-                border: 1px solid;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
             
             .badge-ouvert { 
-                background: #fee !important; 
-                color: #c33 !important;
-                border-color: #c33 !important;
+                background: #ffe6e6 !important; 
+                color: #d32f2f !important;
+                border: 2px solid #d32f2f !important;
             }
             
             .badge-encours { 
-                background: #ffc !important; 
-                color: #880 !important;
-                border-color: #880 !important;
+                background: #fff8e1 !important; 
+                color: #f57c00 !important;
+                border: 2px solid #f57c00 !important;
             }
             
             .badge-ferme { 
-                background: #efe !important; 
-                color: #383 !important;
-                border-color: #383 !important;
+                background: #e8f5e9 !important; 
+                color: #388e3c !important;
+                border: 2px solid #388e3c !important;
             }
             
             /* Pied de page */
             footer { 
                 display: block !important;
-                text-align: center; 
-                padding: 30px 20px;
-                margin-top: 50px;
+                margin-top: 60px;
+                padding: 30px 40px;
                 border-top: 3px solid #667eea;
-                color: #667eea !important;
-                font-size: 0.95rem;
+                background: #f8f9fa;
                 page-break-inside: avoid;
             }
             
             footer p {
-                margin: 8px 0;
-                color: #667eea !important;
+                margin: 10px 0;
+                color: #555 !important;
+                font-size: 0.95rem;
+                line-height: 1.6;
             }
             
-            /* Saut de page intelligent */
-            .chart-container, .table-container, .stats-grid {
-                page-break-inside: avoid;
+            footer strong {
+                color: #667eea !important;
+                font-size: 1.1rem;
             }
             
             /* Marges de page */
             @page {
-                margin: 2cm;
+                margin: 1.5cm;
                 size: A4 portrait;
             }
             
-            /* Forcer les couleurs */
-            * { 
-                print-color-adjust: exact !important;
-                -webkit-print-color-adjust: exact !important;
+            /* Séparateur visuel entre sections */
+            .chart-container:not(:last-child)::after {
+                content: '';
+                display: block;
+                height: 1px;
+                background: #e0e0e0;
+                margin: 40px 0 0 0;
             }
         }
         
@@ -331,11 +430,18 @@
 </head>
 <body>
     <div class="print-header">
-        <h1>📊 RAPPORT D'ACTIVITÉ HELPDESK</h1>
-        <p class="subtitle">Service Technique - Lycée Samuel de Champlain</p>
-        <p class="subtitle">Responsables : M. Bruno Grec & M. Saad Mechri</p>
+        <div style="font-size: 4rem; margin-bottom: 20px;">📊</div>
+        <h1>RAPPORT D'ACTIVITÉ<br>HELPDESK</h1>
+        <div style="height: 3px; width: 200px; background: white; margin: 30px auto; opacity: 0.5;"></div>
+        <p class="subtitle">Service Technique</p>
+        <p class="subtitle" style="font-size: 1.6rem; font-weight: 600;">Lycée Samuel de Champlain</p>
+        <div style="margin: 40px 0;">
+            <p class="subtitle" style="font-size: 1.2rem;">Responsables :</p>
+            <p class="subtitle" style="font-size: 1.3rem; font-weight: 600;">M. Bruno Grec - Référent Numérique</p>
+            <p class="subtitle" style="font-size: 1.3rem; font-weight: 600;">M. Saad Mechri - Administrateur Technique</p>
+        </div>
         <div class="print-date" id="printDate"></div>
-        <div class="print-period" id="printPeriod" style="margin-top: 10px; font-size: 1rem;"></div>
+        <div class="print-period" id="printPeriod"></div>
     </div>
 
     <div class="container">
@@ -358,6 +464,8 @@
         <div id="error" style="display: none;"></div>
 
         <div id="dashboard" style="display: none;">
+            <h2 class="section-title" style="display: none;">📊 VUE D'ENSEMBLE</h2>
+            
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">Total Incidents</div>
