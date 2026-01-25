@@ -108,6 +108,17 @@
         
         .horizontal-bars { display: flex; flex-direction: column; gap: 10px; }
         .bar-item { display: flex; align-items: center; gap: 10px; }
+        
+        .month-label-horizontal {
+            min-width: 100px;
+            width: 100px;
+            text-align: right; 
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
         .room-label { 
             min-width: 80px;
             width: 80px;
@@ -117,6 +128,7 @@
             font-weight: 600;
             flex-shrink: 0;
         }
+        
         .bar-fill { 
             background: linear-gradient(to right, #667eea, #764ba2);
             color: white;
@@ -211,7 +223,7 @@
             <div class="chart-grid">
                 <div class="chart-container">
                     <h3 class="chart-title">📈 Évolution mensuelle</h3>
-                    <div class="vertical-bars" id="monthlyChart"></div>
+                    <div class="horizontal-bars" id="monthlyChart"></div>
                 </div>
 
                 <div class="chart-container">
@@ -388,7 +400,7 @@
         }
 
         function createMonthlyChart(data) {
-            var months = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+            var months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
             var counts = [0,0,0,0,0,0,0,0,0,0,0,0];
             
             data.forEach(function(row) {
@@ -415,12 +427,10 @@
             var html = '';
             
             for (var i = 0; i < 12; i++) {
-                var height = (counts[i] / max * 100);
-                html += '<div style="flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">' +
-                        '<div class="bar" style="height: ' + height + '%">' +
-                        '<div class="bar-value">' + counts[i] + '</div>' +
-                        '</div>' +
-                        '<div class="month-label">' + months[i] + '</div>' +
+                var width = (counts[i] / max * 100);
+                html += '<div class="bar-item">' +
+                        '<div class="month-label-horizontal">' + months[i] + '</div>' +
+                        '<div class="bar-fill" style="width: ' + width + '%">' + counts[i] + '</div>' +
                         '</div>';
             }
             
