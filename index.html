@@ -133,22 +133,209 @@
         #error { text-align: center; padding: 50px; background: rgba(255,255,255,0.95); color: #c33; border-radius: 12px; margin: 50px auto; max-width: 600px; }
         
         @media print {
-            body { background: white; color: black; }
-            .controls, .btn { display: none; }
-            .chart-container, .table-container, .stat-card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
-            header { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 20px; margin-bottom: 30px; }
-            .print-header { display: block !important; color: #667eea; text-align: center; padding: 20px; border-bottom: 2px solid #667eea; margin-bottom: 30px; }
-            .print-date { font-size: 0.9rem; color: #666; margin-top: 10px; }
-            * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-            footer { display: block; text-align: center; padding-top: 20px; margin-top: 40px; border-top: 2px solid #667eea; color: #667eea; font-size: 0.9rem; }
+            body { 
+                background: white !important; 
+                color: black !important;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .container { max-width: 100%; }
+            
+            .controls, .btn { display: none !important; }
+            
+            /* En-tête professionnel */
+            .print-header { 
+                display: block !important; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white !important;
+                text-align: center; 
+                padding: 40px 20px;
+                margin-bottom: 40px;
+                page-break-after: avoid;
+            }
+            
+            .print-header h1 {
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            
+            .print-header .subtitle {
+                font-size: 1.2rem;
+                margin: 10px 0;
+                opacity: 0.95;
+            }
+            
+            .print-date { 
+                font-size: 1rem; 
+                margin-top: 15px;
+                font-weight: 600;
+            }
+            
+            /* En-tête de page régulier (masqué à l'impression) */
+            header { display: none !important; }
+            
+            /* Statistiques */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin: 30px 0;
+                page-break-inside: avoid;
+            }
+            
+            .stat-card { 
+                box-shadow: none !important; 
+                border: 2px solid #667eea !important;
+                page-break-inside: avoid;
+                background: white !important;
+            }
+            
+            .stat-value { 
+                color: #667eea !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .stat-label {
+                color: #333 !important;
+            }
+            
+            /* Graphiques */
+            .chart-grid {
+                display: block;
+                page-break-inside: avoid;
+            }
+            
+            .chart-container { 
+                box-shadow: none !important; 
+                border: 2px solid #ddd !important;
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                background: white !important;
+            }
+            
+            .chart-title {
+                color: #667eea !important;
+                border-bottom: 2px solid #667eea;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            
+            /* Barres horizontales */
+            .bar-fill {
+                background: linear-gradient(to right, #667eea, #764ba2) !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                color: white !important;
+            }
+            
+            .month-label-horizontal, .room-label {
+                color: #333 !important;
+                font-weight: 600 !important;
+            }
+            
+            /* Tableau */
+            .table-container { 
+                box-shadow: none !important; 
+                border: 2px solid #ddd !important;
+                page-break-inside: avoid;
+                margin-top: 30px;
+                background: white !important;
+            }
+            
+            table { 
+                width: 100%; 
+                border-collapse: collapse;
+            }
+            
+            th { 
+                background: #667eea !important; 
+                color: white !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                border: 1px solid #667eea !important;
+            }
+            
+            td { 
+                border: 1px solid #ddd !important;
+                color: #333 !important;
+            }
+            
+            tr:nth-child(even) {
+                background: #f9f9f9 !important;
+            }
+            
+            .badge { 
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                border: 1px solid;
+            }
+            
+            .badge-ouvert { 
+                background: #fee !important; 
+                color: #c33 !important;
+                border-color: #c33 !important;
+            }
+            
+            .badge-encours { 
+                background: #ffc !important; 
+                color: #880 !important;
+                border-color: #880 !important;
+            }
+            
+            .badge-ferme { 
+                background: #efe !important; 
+                color: #383 !important;
+                border-color: #383 !important;
+            }
+            
+            /* Pied de page */
+            footer { 
+                display: block !important;
+                text-align: center; 
+                padding: 30px 20px;
+                margin-top: 50px;
+                border-top: 3px solid #667eea;
+                color: #667eea !important;
+                font-size: 0.95rem;
+                page-break-inside: avoid;
+            }
+            
+            footer p {
+                margin: 8px 0;
+                color: #667eea !important;
+            }
+            
+            /* Saut de page intelligent */
+            .chart-container, .table-container, .stats-grid {
+                page-break-inside: avoid;
+            }
+            
+            /* Marges de page */
+            @page {
+                margin: 2cm;
+                size: A4 portrait;
+            }
+            
+            /* Forcer les couleurs */
+            * { 
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
+            }
         }
+        
         .print-header { display: none; }
     </style>
 </head>
 <body>
     <div class="print-header">
-        <h1>📊 Rapport Helpdesk - Lycée Samuel de Champlain</h1>
+        <h1>📊 RAPPORT D'ACTIVITÉ HELPDESK</h1>
+        <p class="subtitle">Service Technique - Lycée Samuel de Champlain</p>
+        <p class="subtitle">Responsables : M. Bruno Grec & M. Saad Mechri</p>
         <div class="print-date" id="printDate"></div>
+        <div class="print-period" id="printPeriod" style="margin-top: 10px; font-size: 1rem;"></div>
     </div>
 
     <div class="container">
@@ -164,7 +351,7 @@
                 <option value="2025-2026" selected>Année 2025-2026</option>
             </select>
             <button class="btn" onclick="loadData()">🔄 Actualiser</button>
-            <button class="btn" onclick="printReport()">📄 Générer Rapport PDF</button>
+            <button class="btn" onclick="printReport()">📄 Générer Rapport Officiel PDF</button>
         </div>
 
         <div id="loading">⏳ Chargement des données...</div>
@@ -221,8 +408,10 @@
     </div>
 
     <footer style="display: none;">
-        <p>Lycée Samuel de Champlain - Service Technique</p>
-        <p>Généré le <span id="footerDate"></span></p>
+        <p><strong>Lycée Samuel de Champlain - Service Technique</strong></p>
+        <p>Responsables : M. Bruno Grec (Référent Numérique) & M. Saad Mechri (Administrateur Technique)</p>
+        <p>Document généré automatiquement le <span id="footerDate"></span></p>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: #666;">Ce rapport est confidentiel et destiné exclusivement à un usage interne.</p>
     </footer>
 
     <script>
@@ -520,10 +709,24 @@
                 minute: '2-digit'
             });
             
-            document.getElementById('printDate').textContent = 'Généré le ' + dateStr;
+            // Déterminer la période couverte
+            var yearFilter = document.getElementById('yearFilter').value;
+            var periodStr = '';
+            
+            if (yearFilter === 'all') {
+                periodStr = 'Période : Toutes les données (Septembre 2025 - Janvier 2026)';
+            } else {
+                periodStr = 'Période : Année scolaire ' + yearFilter;
+            }
+            
+            document.getElementById('printDate').textContent = dateStr;
+            document.getElementById('printPeriod').textContent = periodStr;
             document.getElementById('footerDate').textContent = dateStr;
             
-            window.print();
+            // Petit délai pour s'assurer que tout est chargé
+            setTimeout(function() {
+                window.print();
+            }, 100);
         }
 
         // Charger au démarrage
