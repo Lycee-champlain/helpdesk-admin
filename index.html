@@ -216,23 +216,57 @@
         var SHEET_ID = '1mC3doKLZpW3QdudQBF2Ni4aoxUQsyKY1Wv64BXuhK84';
         var allData = [];
 
-        // Parser CSV ultra-robuste
+        // Parser CSV qui gère correctement les guillemets et virgules
+        function parseCSVLine(line) {
+            var result = [];
+            var current = '';
+            var inQuotes = false;
+            
+            for (var i = 0; i < line.length; i++) {
+                var char = line[i];
+                var nextChar = line[i + 1];
+                
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Guillemet échappé ""
+                        current += '"';
+                        i++; // Skip next quote
+                    } else {
+                        // Toggle quotes
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    // Fin de champ
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            // Dernier champ
+            result.push(current.trim());
+            return result;
+        }
+
         function parseCSV(text) {
             var lines = text.trim().split('\n');
             if (lines.length < 2) return [];
             
-            var headers = lines[0].split(',').map(function(h) { return h.trim().replace(/^"|"$/g, ''); });
+            var headers = parseCSVLine(lines[0]);
             var result = [];
+            
+            console.log('Headers CSV:', headers);
             
             for (var i = 1; i < lines.length; i++) {
                 var line = lines[i].trim();
                 if (!line) continue;
                 
+                var values = parseCSVLine(line);
                 var row = {};
-                var values = line.split(',');
                 
-                for (var j = 0; j < headers.length && j < values.length; j++) {
-                    row[headers[j]] = values[j].trim().replace(/^"|"$/g, '');
+                for (var j = 0; j < headers.length; j++) {
+                    row[headers[j]] = values[j] || '';
                 }
                 
                 // Ne garder que les lignes avec une date
@@ -242,8 +276,7 @@
             }
             
             console.log('CSV parsé:', result.length, 'lignes');
-            console.log('Colonnes:', headers);
-            console.log('Premier élément:', result[0]);
+            console.log('Premier incident:', result[0]);
             return result;
         }
 
