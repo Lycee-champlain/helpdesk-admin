@@ -183,6 +183,184 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
+        @media print {
+            body { 
+                background: white !important;
+                color: black !important;
+                padding: 0;
+            }
+            
+            .container { max-width: 100%; }
+            
+            /* Masquer les contrôles */
+            .controls { display: none !important; }
+            
+            /* En-tête rapport */
+            header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 40px 30px;
+                margin: 0 0 30px 0;
+                page-break-after: avoid;
+            }
+            
+            h1 { 
+                font-size: 2.5rem;
+                text-shadow: none;
+                color: white;
+            }
+            
+            .subtitle { 
+                color: rgba(255,255,255,0.95);
+                font-size: 1rem;
+            }
+            
+            /* Cartes statistiques */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin: 30px 0;
+                page-break-inside: avoid;
+            }
+            
+            .stat-card {
+                background: white !important;
+                color: black !important;
+                border: 2px solid #667eea;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            
+            .stat-value {
+                color: #667eea !important;
+                font-size: 2.5rem;
+            }
+            
+            .stat-label {
+                color: #333 !important;
+                font-size: 0.85rem;
+            }
+            
+            /* Sections */
+            .section {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ddd;
+                box-shadow: none;
+                margin: 30px 0;
+                page-break-inside: avoid;
+            }
+            
+            .section h2 {
+                color: #667eea !important;
+                font-size: 1.5rem;
+                border-bottom: 3px solid #667eea;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            
+            /* Graphiques */
+            .bar-chart, .horizontal-bars {
+                page-break-inside: avoid;
+            }
+            
+            .bar {
+                background: linear-gradient(180deg, #667eea, #764ba2) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .bar-fill {
+                background: linear-gradient(90deg, #667eea, #764ba2) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .bar-label, .bar-value {
+                color: black !important;
+            }
+            
+            .horizontal-bars .bar-value {
+                color: white !important;
+            }
+            
+            /* Tableau */
+            table {
+                page-break-inside: auto;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            
+            th {
+                background: #667eea !important;
+                color: white !important;
+                border: 1px solid #667eea;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            td {
+                border: 1px solid #ddd;
+                color: black !important;
+            }
+            
+            tr:hover {
+                background: white !important;
+            }
+            
+            /* Badges */
+            .badge {
+                border: 1px solid currentColor;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .badge-ouvert {
+                background: #fee !important;
+                color: #c00 !important;
+            }
+            
+            .badge-encours {
+                background: #ffeaa7 !important;
+                color: #d63031 !important;
+            }
+            
+            .badge-ferme {
+                background: #e0e0e0 !important;
+                color: #666 !important;
+            }
+            
+            /* Pied de page sur chaque page */
+            @page {
+                margin: 20mm;
+                @bottom-right {
+                    content: "Page " counter(page) " sur " counter(pages);
+                    font-size: 9pt;
+                    color: #666;
+                }
+                @bottom-left {
+                    content: "Lycée Samuel de Champlain - " attr(data-date);
+                    font-size: 9pt;
+                    color: #666;
+                }
+            }
+            
+            /* Date d'impression */
+            header::after {
+                content: "Rapport généré le " attr(data-print-date);
+                display: block;
+                margin-top: 15px;
+                font-size: 0.9rem;
+                opacity: 0.8;
+            }
+        }
+        
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .stats-grid { grid-template-columns: 1fr; }
@@ -211,7 +389,7 @@
                     <option value="2025-2026">2025-2026</option>
                     <option value="2024-2025">2024-2025</option>
                 </select>
-                <button class="btn" onclick="window.print()">🖨️ Imprimer</button>
+                <button class="btn" onclick="printReport()">🖨️ Générer Rapport PDF</button>
                 <button class="btn" onclick="loadData()">🔄 Actualiser</button>
             </div>
 
@@ -303,17 +481,45 @@
             var lines = csv.split('\n');
             if (lines.length < 2) return [];
             
-            var headers = lines[0].split(',').map(function(h) { return h.trim().replace(/"/g, ''); });
+            // Parser CSV robuste qui gère les guillemets et virgules
+            function parseCSVLine(line) {
+                var result = [];
+                var current = '';
+                var inQuotes = false;
+                
+                for (var i = 0; i < line.length; i++) {
+                    var char = line[i];
+                    var nextChar = line[i + 1];
+                    
+                    if (char === '"') {
+                        if (inQuotes && nextChar === '"') {
+                            current += '"';
+                            i++;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        result.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                result.push(current.trim());
+                return result;
+            }
+            
+            var headers = parseCSVLine(lines[0]);
             var data = [];
             
             for (var i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 
-                var values = lines[i].split(',');
+                var values = parseCSVLine(lines[i]);
                 var row = {};
                 
                 headers.forEach(function(header, index) {
-                    row[header] = values[index] ? values[index].trim().replace(/"/g, '') : '';
+                    row[header] = values[index] || '';
                 });
                 
                 // Filtrer les lignes vides
@@ -385,22 +591,32 @@
         function createRoomChart(data) {
             var rooms = {};
             data.forEach(function(row) {
-                var room = row['Salle (Ex: F114)'] || 'Non spécifié';
-                rooms[room] = (rooms[room] || 0) + 1;
+                var room = row['Salle (Ex: F114)'] || row['Salle'] || 'Non spécifié';
+                if (room && room.trim()) {
+                    rooms[room] = (rooms[room] || 0) + 1;
+                }
             });
+
+            console.log('Salles trouvées:', rooms);
 
             var sorted = Object.keys(rooms)
                 .map(function(k) { return { room: k, count: rooms[k] }; })
                 .sort(function(a, b) { return b.count - a.count; })
                 .slice(0, 10);
 
-            var max = sorted.length > 0 ? sorted[0].count : 1;
+            if (sorted.length === 0) {
+                document.getElementById('roomChart').innerHTML = '<p style="text-align: center; color: #999;">Aucune salle trouvée</p>';
+                return;
+            }
+
+            var max = sorted[0].count;
             var html = '';
             
             sorted.forEach(function(item) {
                 var width = (item.count / max * 100);
+                var roomName = item.room.length > 15 ? item.room.substring(0, 15) + '...' : item.room;
                 html += '<div class="bar-item">' +
-                        '<div class="bar-label">' + item.room + '</div>' +
+                        '<div class="bar-label" title="' + item.room + '">' + roomName + '</div>' +
                         '<div class="bar-fill" style="width: ' + width + '%">' +
                         '<div class="bar-value">' + item.count + '</div>' +
                         '</div>' +
@@ -408,6 +624,24 @@
             });
             
             document.getElementById('roomChart').innerHTML = html;
+        }
+
+        function printReport() {
+            // Ajouter la date d'impression
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.querySelector('header').setAttribute('data-print-date', dateStr);
+            
+            // Ouvrir la boîte de dialogue d'impression
+            window.print();
         }
 
         function updateTable(data) {
