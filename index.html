@@ -453,14 +453,20 @@
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('error').style.display = 'none';
 
-            // URL pour accès CSV public
-            var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv';
+            // Utiliser l'API JSON au lieu de CSV
+            var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json';
             
             fetch(url)
                 .then(function(response) { return response.text(); })
-                .then(function(csv) {
-                    allData = parseCSV(csv);
+                .then(function(text) {
+                    // Extraire le JSON de la réponse (format spécial Google)
+                    var json = text.substring(47).slice(0, -2);
+                    var data = JSON.parse(json);
+                    allData = parseGoogleSheetsData(data);
+                    
                     console.log('Données chargées:', allData.length, 'incidents');
+                    console.log('Premier incident:', allData[0]);
+                    
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
                     updateDashboard();
@@ -477,58 +483,28 @@
                 });
         }
 
-        function parseCSV(csv) {
-            var lines = csv.split('\n');
-            if (lines.length < 2) return [];
+        function parseGoogleSheetsData(data) {
+            var cols = data.table.cols;
+            var rows = data.table.rows;
+            var result = [];
             
-            // Parser CSV robuste qui gère les guillemets et virgules
-            function parseCSVLine(line) {
-                var result = [];
-                var current = '';
-                var inQuotes = false;
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var obj = {};
                 
-                for (var i = 0; i < line.length; i++) {
-                    var char = line[i];
-                    var nextChar = line[i + 1];
-                    
-                    if (char === '"') {
-                        if (inQuotes && nextChar === '"') {
-                            current += '"';
-                            i++;
-                        } else {
-                            inQuotes = !inQuotes;
-                        }
-                    } else if (char === ',' && !inQuotes) {
-                        result.push(current.trim());
-                        current = '';
-                    } else {
-                        current += char;
-                    }
+                for (var j = 0; j < cols.length; j++) {
+                    var colName = cols[j].label || 'Col' + j;
+                    var cell = row.c[j];
+                    obj[colName] = cell ? (cell.f || cell.v || '') : '';
                 }
-                result.push(current.trim());
-                return result;
-            }
-            
-            var headers = parseCSVLine(lines[0]);
-            var data = [];
-            
-            for (var i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                
-                var values = parseCSVLine(lines[i]);
-                var row = {};
-                
-                headers.forEach(function(header, index) {
-                    row[header] = values[index] || '';
-                });
                 
                 // Filtrer les lignes vides
-                if (row.Horodateur && row.Horodateur.trim() !== '') {
-                    data.push(row);
+                if (obj[cols[0].label] && obj[cols[0].label].toString().trim() !== '') {
+                    result.push(obj);
                 }
             }
             
-            return data;
+            return result;
         }
 
         function updateDashboard() {
