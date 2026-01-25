@@ -590,14 +590,40 @@
 
         function createRoomChart(data) {
             var rooms = {};
+            
+            // Chercher le bon nom de colonne
+            var roomColumn = null;
+            var possibleNames = ['Salle (Ex: F114)', 'Salle', 'Salle (Ex: F114)', 'Salle (Ex: F114)', 'salle'];
+            
+            if (data.length > 0) {
+                var firstRow = data[0];
+                var keys = Object.keys(firstRow);
+                console.log('Colonnes disponibles:', keys);
+                
+                // Trouver la colonne qui contient "salle" (insensible à la casse)
+                for (var i = 0; i < keys.length; i++) {
+                    if (keys[i].toLowerCase().indexOf('salle') !== -1) {
+                        roomColumn = keys[i];
+                        console.log('Colonne salle trouvée:', roomColumn);
+                        break;
+                    }
+                }
+            }
+            
+            if (!roomColumn) {
+                document.getElementById('roomChart').innerHTML = '<p style="text-align: center; color: #999;">Colonne "Salle" non trouvée</p>';
+                return;
+            }
+            
             data.forEach(function(row) {
-                var room = row['Salle (Ex: F114)'] || row['Salle'] || 'Non spécifié';
-                if (room && room.trim()) {
+                var room = row[roomColumn] || 'Non spécifié';
+                room = room.trim();
+                if (room && room !== '' && room !== 'Non spécifié') {
                     rooms[room] = (rooms[room] || 0) + 1;
                 }
             });
 
-            console.log('Salles trouvées:', rooms);
+            console.log('Salles comptées:', rooms);
 
             var sorted = Object.keys(rooms)
                 .map(function(k) { return { room: k, count: rooms[k] }; })
