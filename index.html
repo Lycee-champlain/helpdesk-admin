@@ -6,64 +6,198 @@
     <title>Admin Helpdesk - Lycée Samuel de Champlain</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #0a0e17; color: #e8edf4; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: #00d4ff; font-size: 2.5rem; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #8b95a8; margin-bottom: 30px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
         
-        .config-box { background: #121826; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
-        .config-box input { width: 100%; padding: 10px; background: #1a2234; border: 1px solid #1e293b; 
-                           color: white; border-radius: 5px; font-size: 1rem; }
-        .config-box button { width: 100%; margin-top: 10px; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .subtitle { font-size: 1.1rem; opacity: 0.9; }
         
-        .controls { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
-        select { background: #121826; color: white; border: 1px solid #1e293b; padding: 10px 15px; border-radius: 5px; }
-        .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; 
-               padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .controls { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        select, .btn { 
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        select { background: rgba(255,255,255,0.9); color: #333; }
+        .btn { background: rgba(255,255,255,0.9); color: #667eea; font-weight: bold; }
+        .btn:hover, select:hover { transform: translateY(-2px); }
         
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
-        .stat-card { background: #121826; padding: 30px; border-radius: 12px; text-align: center; border-top: 3px solid #667eea; }
-        .stat-value { font-size: 3.5rem; font-weight: bold; color: #00d4ff; }
-        .stat-label { color: #8b95a8; margin-top: 10px; }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin: 30px 0;
+        }
+        .stat-card { 
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { 
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .stat-label { 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
         
-        .section { background: #121826; padding: 30px; border-radius: 12px; margin: 30px 0; }
-        .section h2 { color: #00d4ff; margin-bottom: 20px; }
+        .section { 
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .section h2 { 
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
         
-        .bar-item { margin: 15px 0; }
-        .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .bar-bg { background: #1e293b; height: 30px; border-radius: 5px; overflow: hidden; }
-        .bar-fill { background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; 
-                     display: flex; align-items: center; padding-left: 10px; color: white; font-weight: bold; }
+        .bar-chart { display: flex; gap: 10px; align-items: flex-end; height: 200px; margin: 20px 0; }
+        .bar { 
+            flex: 1;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-height: 5px;
+            transition: all 0.3s;
+        }
+        .bar:hover { opacity: 0.8; }
+        .bar-label { 
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .horizontal-bars .bar-item { 
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .horizontal-bars .bar-label { 
+            width: 100px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        .horizontal-bars .bar-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 30px;
+            border-radius: 5px;
+            transition: width 0.5s;
+            position: relative;
+        }
+        .horizontal-bars .bar-value {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+        }
         
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #1e293b; }
-        th { background: #1a2234; color: #8b95a8; }
+        th, td { padding: 12px; text-align: left; }
+        th { 
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        td { border-bottom: 1px solid #eee; }
+        tr:hover { background: #f5f5f5; }
         
-        .badge { padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; }
-        .badge-ferme { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+        .badge { 
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-ouvert { background: #fee; color: #c00; }
+        .badge-encours { background: #ffeaa7; color: #d63031; }
+        .badge-ferme { background: #e0e0e0; color: #666; }
         
-        #loading { text-align: center; padding: 100px; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #1e293b; border-top-color: #00d4ff; 
-                   border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        #loading { 
+            text-align: center;
+            padding: 100px 20px;
+            font-size: 1.5rem;
+        }
+        .spinner { 
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; padding: 20px; 
-                 border-radius: 10px; color: #ef4444; text-align: center; margin: 20px 0; }
+        .error { 
+            background: rgba(255,255,255,0.95);
+            color: #c00;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 Administration Helpdesk</h1>
-        <p class="subtitle">Lycée Samuel de Champlain - Académie de Créteil</p>
+        <header>
+            <h1>📊 Administration Helpdesk</h1>
+            <p class="subtitle">Lycée Samuel de Champlain - Académie de Créteil</p>
+            <p class="subtitle" style="font-size: 0.9rem; margin-top: 5px;">M. Bruno Grec & M. Saad Mechri</p>
+        </header>
 
-        <div class="config-box" id="configBox">
-            <h3 style="margin-bottom: 15px;">⚙️ Configuration</h3>
-            <p style="color: #8b95a8; margin-bottom: 15px;">Collez l'URL de votre API Apps Script :</p>
-            <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/.../exec">
-            <button class="btn" onclick="saveConfig()">💾 Enregistrer et Charger</button>
-        </div>
-
-        <div id="loading" style="display: none;">
+        <div id="loading">
             <div class="spinner"></div>
             <p>Chargement des données...</p>
         </div>
@@ -72,20 +206,19 @@
 
         <div id="dashboard" style="display: none;">
             <div class="controls">
-                <div>
-                    <label style="margin-right: 10px;">Année scolaire :</label>
-                    <select id="yearSelect" onchange="updateDashboard()">
-                        <option value="2025-2026">2025-2026</option>
-                        <option value="2024-2025">2024-2025</option>
-                    </select>
-                </div>
-                <button class="btn" onclick="window.print()">📥 Imprimer / PDF</button>
+                <select id="yearSelect" onchange="updateDashboard()">
+                    <option value="all">📊 Toutes les données</option>
+                    <option value="2025-2026">2025-2026</option>
+                    <option value="2024-2025">2024-2025</option>
+                </select>
+                <button class="btn" onclick="window.print()">🖨️ Imprimer</button>
+                <button class="btn" onclick="loadData()">🔄 Actualiser</button>
             </div>
 
-            <div class="stats">
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="total">0</div>
-                    <div class="stat-label">Total</div>
+                    <div class="stat-label">Total Incidents</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="ouvert">0</div>
@@ -103,18 +236,26 @@
 
             <div class="section">
                 <h2>📈 Évolution Mensuelle</h2>
-                <div id="monthlyChart"></div>
+                <div id="monthlyChart" class="bar-chart"></div>
             </div>
 
             <div class="section">
                 <h2>🏫 Top 10 Salles</h2>
-                <div id="roomChart"></div>
+                <div id="roomChart" class="horizontal-bars"></div>
             </div>
 
             <div class="section">
-                <h2>📋 Derniers Incidents (20)</h2>
+                <h2>📋 20 Derniers Incidents</h2>
                 <table>
-                    <thead><tr><th>Date</th><th>Salle</th><th>Type</th><th>Statut</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Salle</th>
+                            <th>Type</th>
+                            <th>Auteur</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
@@ -123,49 +264,84 @@
 
     <script>
         var allData = [];
-       var API_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://script.google.com/macros/s/AKfycbw93seZI9BrJTMYKcOnWhRukglIv93I4GtvscZ_VyPPA3uXBHmSKRERb4cDaXzK/exec');
+        var SHEET_ID = '1mC3doKLZpW3QdudQBF2Ni4aoxUQsyKY1Wv64BXuhK84';
 
-        if (API_URL) {
-            document.getElementById('apiUrl').value = API_URL;
-            document.getElementById('configBox').style.display = 'none';
+        window.onload = function() {
             loadData();
-        }
-
-        function saveConfig() {
-            API_URL = document.getElementById('apiUrl').value.trim();
-            if (!API_URL) {
-                alert('Veuillez entrer une URL valide');
-                return;
-            }
-            localStorage.setItem('helpdeskApiUrl', API_URL);
-            document.getElementById('configBox').style.display = 'none';
-            loadData();
-        }
+        };
 
         function loadData() {
             document.getElementById('loading').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
             document.getElementById('error').style.display = 'none';
+
+            // URL pour accès CSV public
+            var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv';
             
-            fetch(API_URL)
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    allData = data;
+            fetch(url)
+                .then(function(response) { return response.text(); })
+                .then(function(csv) {
+                    allData = parseCSV(csv);
+                    console.log('Données chargées:', allData.length, 'incidents');
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
                     updateDashboard();
                 })
                 .catch(function(error) {
+                    console.error('Erreur:', error);
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('error').style.display = 'block';
-                    document.getElementById('error').innerHTML = '❌ Erreur de chargement : ' + error.message + 
-                        '<br><br><button class="btn" onclick="location.reload()">🔄 Réessayer</button>' +
-                        '<button class="btn" onclick="resetConfig()" style="margin-left: 10px;">⚙️ Reconfigurer</button>';
+                    document.getElementById('error').innerHTML = 
+                        '<h2>❌ Erreur de chargement</h2>' +
+                        '<p style="margin: 20px 0;">Vérifiez que le Google Sheet est partagé en lecture publique.</p>' +
+                        '<p style="margin: 20px 0; font-size: 0.9rem;">' + error.message + '</p>' +
+                        '<button class="btn" onclick="loadData()">🔄 Réessayer</button>';
                 });
         }
 
-        function resetConfig() {
-            localStorage.removeItem('helpdeskApiUrl');
-            location.reload();
+        function parseCSV(csv) {
+            var lines = csv.split('\n');
+            if (lines.length < 2) return [];
+            
+            var headers = lines[0].split(',').map(function(h) { return h.trim().replace(/"/g, ''); });
+            var data = [];
+            
+            for (var i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                var values = lines[i].split(',');
+                var row = {};
+                
+                headers.forEach(function(header, index) {
+                    row[header] = values[index] ? values[index].trim().replace(/"/g, '') : '';
+                });
+                
+                // Filtrer les lignes vides
+                if (row.Horodateur && row.Horodateur.trim() !== '') {
+                    data.push(row);
+                }
+            }
+            
+            return data;
+        }
+
+        function updateDashboard() {
+            var year = document.getElementById('yearSelect').value;
+            var data = year === 'all' ? allData : filterByYear(allData, year);
+            
+            var total = data.length;
+            var ouvert = data.filter(function(r) { return r.Statut === 'Ouvert'; }).length;
+            var encours = data.filter(function(r) { return r.Statut === 'En cours'; }).length;
+            var ferme = data.filter(function(r) { return r.Statut === 'Fermé' || r.Statut === 'Résolu'; }).length;
+
+            document.getElementById('total').textContent = total;
+            document.getElementById('ouvert').textContent = ouvert;
+            document.getElementById('encours').textContent = encours;
+            document.getElementById('ferme').textContent = ferme;
+
+            createMonthlyChart(data);
+            createRoomChart(data);
+            updateTable(data);
         }
 
         function filterByYear(data, year) {
@@ -181,51 +357,27 @@
             });
         }
 
-        function updateDashboard() {
-            var year = document.getElementById('yearSelect').value;
-            var data = filterByYear(allData, year);
-            
-            var total = data.length;
-            var ouvert = 0, encours = 0, ferme = 0;
-            
-            data.forEach(function(row) {
-                var s = (row.Statut || '').trim();
-                if (s === 'Ouvert') ouvert++;
-                else if (s === 'En cours') encours++;
-                else ferme++;
-            });
-
-            document.getElementById('total').textContent = total;
-            document.getElementById('ouvert').textContent = ouvert;
-            document.getElementById('encours').textContent = encours;
-            document.getElementById('ferme').textContent = ferme;
-
-            createMonthlyChart(data);
-            createRoomChart(data);
-            updateTable(data);
-        }
-
         function createMonthlyChart(data) {
-            var months = ['Sept','Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août'];
-            var counts = [0,0,0,0,0,0,0,0,0,0,0,0];
+            var months = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+            var counts = new Array(12).fill(0);
             
             data.forEach(function(row) {
-                if (!row.Horodateur) return;
-                var date = new Date(row.Horodateur);
-                var m = date.getMonth();
-                counts[m >= 8 ? m - 8 : m + 4]++;
+                if (row.Horodateur) {
+                    var m = new Date(row.Horodateur).getMonth();
+                    counts[m]++;
+                }
             });
 
             var max = Math.max.apply(null, counts) || 1;
             var html = '';
             
-            for (var i = 0; i < 12; i++) {
-                var pct = (counts[i] / max) * 100;
-                html += '<div class="bar-item">' +
-                    '<div class="bar-label"><span>' + months[i] + '</span><span>' + counts[i] + '</span></div>' +
-                    '<div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%">' + 
-                    (counts[i] || '') + '</div></div></div>';
-            }
+            months.forEach(function(month, i) {
+                var height = (counts[i] / max * 100);
+                html += '<div class="bar" style="height: ' + height + '%">' +
+                        '<div class="bar-value">' + counts[i] + '</div>' +
+                        '<div class="bar-label">' + month + '</div>' +
+                        '</div>';
+            });
             
             document.getElementById('monthlyChart').innerHTML = html;
         }
@@ -237,18 +389,22 @@
                 rooms[room] = (rooms[room] || 0) + 1;
             });
 
-            var sorted = Object.keys(rooms).map(function(k) {
-                return [k, rooms[k]];
-            }).sort(function(a,b) { return b[1] - a[1]; }).slice(0, 10);
+            var sorted = Object.keys(rooms)
+                .map(function(k) { return { room: k, count: rooms[k] }; })
+                .sort(function(a, b) { return b.count - a.count; })
+                .slice(0, 10);
 
-            var max = sorted[0] ? sorted[0][1] : 1;
+            var max = sorted.length > 0 ? sorted[0].count : 1;
             var html = '';
             
             sorted.forEach(function(item) {
-                var pct = (item[1] / max) * 100;
+                var width = (item.count / max * 100);
                 html += '<div class="bar-item">' +
-                    '<div class="bar-label"><span>' + item[0] + '</span><span>' + item[1] + '</span></div>' +
-                    '<div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%">' + item[1] + '</div></div></div>';
+                        '<div class="bar-label">' + item.room + '</div>' +
+                        '<div class="bar-fill" style="width: ' + width + '%">' +
+                        '<div class="bar-value">' + item.count + '</div>' +
+                        '</div>' +
+                        '</div>';
             });
             
             document.getElementById('roomChart').innerHTML = html;
@@ -261,11 +417,16 @@
             data.slice(-20).reverse().forEach(function(row) {
                 var tr = document.createElement('tr');
                 var date = row.Horodateur ? new Date(row.Horodateur).toLocaleDateString('fr-FR') : '-';
+                var statut = row.Statut || 'Ouvert';
+                var badgeClass = statut === 'Ouvert' ? 'badge-ouvert' : 
+                                 statut === 'En cours' ? 'badge-encours' : 'badge-ferme';
                 
-                tr.innerHTML = '<td>' + date + '</td>' +
+                tr.innerHTML = 
+                    '<td>' + date + '</td>' +
                     '<td>' + (row['Salle (Ex: F114)'] || '-') + '</td>' +
                     '<td>' + (row['Type de demande'] || '-') + '</td>' +
-                    '<td><span class="badge badge-ferme">' + (row.Statut || 'Ouvert') + '</span></td>';
+                    '<td>' + (row['Auteur de la demande (Nom et Prénom)'] || '-') + '</td>' +
+                    '<td><span class="badge ' + badgeClass + '">' + statut + '</span></td>';
                 tbody.appendChild(tr);
             });
         }
