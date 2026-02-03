@@ -468,27 +468,24 @@
 
     <script>
         var allData = [];
+        var scriptUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjpwn0RDHsFtyNKoxYRSyigJ-YwNZDXJiP8TAQO2K_zARJqColPDHHHmffp91whcgd9J4ipYCJ8f7OLUdWTZX-OPc_zQOHcuSKc3nJok9cjDEpj806dD1zTZZJKvC-gMyRI2hG1QbVPOys_UFHeZenxYGkgrvY7tKf7J21H8b2Sxa8Lx5DZ7FVjxzgd29Er-6BBcPOU1dyyEQElX5Qj3vLybcEhsFWSbbIqAVwnAQAjwSX1gUw91CB11Qcs3IGtNGekOKOur4-iQ_mKMvFyqtPbm9z-Acvh_fM3-w9V4gnf3xOjVPE&lib=MbNOk8DfzybB3oHf5OUP-QmbSOFJlfpsi';
 
         function loadData(forceRefresh) {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
             document.getElementById('dashboard').style.display = 'none';
 
-            var scriptUrl = 'https://script.google.com/macros/s/AKfycby9zHJv5Q5YSAdWF8a6NomoPXtuZFa2GKLgWO02mClofRYKQM4HvtFcS5KOwf3JfLitrQ/exec';
+            // Utiliser JSONP pour contourner CORS
+            var callbackName = 'helpdeskCallback_' + Date.now();
+            var url = scriptUrl + '?callback=' + callbackName;
             
-            // Ajouter un cache-busting parameter pour forcer le rechargement
             if (forceRefresh) {
-                scriptUrl += '?t=' + new Date().getTime();
+                url += '&t=' + Date.now();
             }
 
-            fetch(scriptUrl)
-                .then(function(response) { 
-                    if (!response.ok) {
-                        throw new Error('Erreur réseau: ' + response.status);
-                    }
-                    return response.json(); 
-                })
-                .then(function(data) {
+            // Créer la fonction callback
+            window[callbackName] = function(data) {
+                try {
                     console.log('Données reçues:', data);
                     
                     if (!data || data.length === 0) {
@@ -506,17 +503,38 @@
                     document.getElementById('dashboard').style.display = 'block';
                     
                     filterData();
-                })
-                .catch(function(error) {
+                } catch (error) {
                     console.error('Erreur:', error);
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('error').style.display = 'block';
                     document.getElementById('error').innerHTML = 
                         '<h3>⚠️ Erreur de chargement</h3>' +
                         '<p>' + error.message + '</p>' +
-                        '<p>Vérifiez que l\'URL du script Google Apps Script est correctement configurée.</p>' +
                         '<button class="btn" onclick="loadData(true)" style="margin-top: 20px;">Réessayer</button>';
-                });
+                } finally {
+                    // Nettoyer
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                }
+            };
+
+            // Créer et ajouter le script
+            var script = document.createElement('script');
+            script.src = url;
+            script.onerror = function() {
+                console.error('Erreur de chargement du script');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = 
+                    '<h3>⚠️ Erreur de connexion</h3>' +
+                    '<p>Impossible de se connecter au serveur de données.</p>' +
+                    '<p>Vérifiez que le Google Apps Script est bien déployé.</p>' +
+                    '<button class="btn" onclick="loadData(true)" style="margin-top: 20px;">Réessayer</button>';
+                delete window[callbackName];
+                document.body.removeChild(script);
+            };
+            
+            document.body.appendChild(script);
         }
 
         function filterData() {
